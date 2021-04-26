@@ -1,26 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import { SearchSelection } from "./components/SearchSelection";
+import { getUsers, User } from "./services/Users";
+import "./styles/main.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export interface UserSelect {
+  value: string;
+  label: string;
 }
+const App: React.FunctionComponent = () => {
+  const [users, setUsers] = useState<UserSelect[]>([]);
+  const [userName, setNames] = useState<string | string[]>([]);
+  const [isLoading, setLoading] = useState(false);
+
+  function loadUses(): void {
+    if (users.length === 0) {
+      setLoading(true);
+      getUsers()
+        .then((_users: User[]) => {
+          const users: UserSelect[] = _users.map((user) => {
+            return {
+              value: user.name,
+              label: user.username,
+            };
+          });
+          setUsers(users);
+        })
+        .finally(() => setLoading(false));
+    }
+  }
+
+  return (
+    <>
+      <h2 style={{ marginLeft: "2rem" }}>Поиск человека по имени</h2>
+      <SearchSelection
+        className={"search-selection"}
+        options={users}
+        value={userName}
+        onChange={setNames}
+        multi={true}
+        focus={loadUses}
+        isLoading={isLoading}
+      />
+      <div style={{ marginLeft: "2rem", marginTop: "1rem" }}>{userName}</div>
+    </>
+  );
+};
 
 export default App;
