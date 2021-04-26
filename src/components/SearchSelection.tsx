@@ -2,7 +2,7 @@ import React from "react";
 import Select from "react-select";
 type OptionValue = string | number;
 type Option<T extends OptionValue> = {
-  value: T;
+  value: T | T[];
   label: string;
 };
 export interface SelectProps<T extends OptionValue> {
@@ -10,7 +10,7 @@ export interface SelectProps<T extends OptionValue> {
   value?: T | T[];
   multi: boolean;
   focus: () => void;
-  onChange: (value: T) => void;
+  onChange: (value: T | T[]) => void;
   className?: string;
   isLoading?: boolean;
 }
@@ -32,9 +32,9 @@ export const SearchSelection = <T extends OptionValue>(
     if (actions.includes(action)) {
       return;
     } else {
-      const name: T =
+      const name: T | T[] =
         props.options.filter((item) => item.value === e)?.pop()?.value ??
-        ("" as T);
+        ("" as T | T[]);
       props.onChange(name);
     }
   }
